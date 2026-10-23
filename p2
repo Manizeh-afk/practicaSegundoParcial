@@ -1,0 +1,67 @@
+class Filme private(
+    val nombre: String,
+    val minutos: Int,
+    val categoria: String
+)
+object Filme {
+    def apply(nombre: String, minutos: Int, categoria: String): Filme = {
+        if minutos <= 0 then new Filme(nombre, 90, categoria)
+        else new Filme(nombre, minutos, categoria)
+    }
+}
+class SesionCine private(
+    val filme: Filme,
+    val numeroSala: Int,
+    val horario: String,
+    val valorEntrada: Double,
+    val butacasLibres: Int
+) {
+    def esPosibleReservar(cantidad: Int): Boolean = {
+        cantidad > 0 && cantidad <= butacasLibres
+    }
+    def calcularCosto(cantidad: Int): Double = {
+        cantidad * valorEntrada
+    }
+    def realizarReserva(cantidad: Int): SesionCine = {
+        if esPosibleReservar(cantidad) then
+            new SesionCine(filme, numeroSala, horario, valorEntrada, butacasLibres - cantidad)
+        else this
+    }
+    def resumen: String = {
+        s"${filme.nombre}\n" +
+        s"Sala: $numeroSala\n" +
+        s"Hora: $horario\n" +
+        s"Precio: $valorEntrada Bs\n" +
+        s"Asientos disponibles: $butacasLibres"
+    }
+}
+object SesionCine {
+    def apply(
+        filme: Filme,
+        numeroSala: Int,
+        horario: String,
+        valorEntrada: Double,
+        butacasLibres: Int
+    ): SesionCine = {
+        val salaCorrecta: Int = if numeroSala >= 1 then numeroSala else 1
+        val precioCorrecto: Double = if valorEntrada >= 0 then valorEntrada else 0.0
+        val asientosCorrectos: Int = if butacasLibres >= 0 then butacasLibres else 0
+        new SesionCine(filme, salaCorrecta, horario, precioCorrecto, asientosCorrectos)
+    }
+    def sesionBasica(filme: Filme, numeroSala: Int, horario: String): SesionCine = {
+        SesionCine(filme, numeroSala, horario, 30.0, 50)
+    }
+}
+// Objetos de prueba
+val filme1 = Filme("Interstellar", 169, "PG-13")
+val sesion1 = SesionCine(filme1, 5, "21:15", 40.0, 60)
+val sesion2 = SesionCine.sesionBasica(filme1, 2, "18:30")
+// Pruebas requeridas
+println(sesion1.resumen)
+println(sesion1.esPosibleReservar(8))
+println(sesion1.calcularCosto(8))
+val sesionReservada = sesion1.realizarReserva(8)
+println(sesion1.butacasLibres)
+println(sesionReservada.butacasLibres)
+// Prueba extra del método de fábrica
+println(sesion2.resumen)
