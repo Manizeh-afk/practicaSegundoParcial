@@ -1,0 +1,153 @@
+//1
+val doblar: Int => Int = x => x * 2
+val alCuadrado: Int => Int = x => x * x
+val esNumeroPar: Int => Boolean = x => x % 2 == 0
+println(doblar(9))
+println(alCuadrado(7))
+println(esNumeroPar(14))
+println(doblar(4))
+println(alCuadrado(5))
+println(esNumeroPar(11))
+
+//2
+val alCubo: Int => Int = x => x * x * x
+val media: (Double, Double) => Double =
+  (a, b) => (a + b) / 2
+val elMayor: (Int, Int) => Int =
+  (a, b) => if (a > b) a else b
+val esDivisiblePorTres: Int => Boolean =
+  x => x % 3 == 0
+println(alCubo(4))
+println(media(15.0, 9.0))
+println(elMayor(22, 18))
+println(esDivisiblePorTres(27))
+println(esDivisiblePorTres(14))
+
+//3
+def aplicarOperacion(
+    numero: Int,
+    operacion: Int => Int
+): Int = {
+  operacion(numero)
+}
+println(aplicarOperacion(8, x => x * 2))
+println(aplicarOperacion(8, x => x * x))
+println(aplicarOperacion(8, x => x + 15))
+println(aplicarOperacion(8, x => -x))
+
+//4
+def ejecutarOperacion(
+    a: Double,
+    b: Double,
+    operacion: (Double, Double) => Double
+): Double = {
+  operacion(a, b)
+}
+println(ejecutarOperacion(20, 8, (a, b) => a + b))
+println(ejecutarOperacion(20, 8, (a, b) => a - b))
+println(ejecutarOperacion(20, 8, (a, b) => a * b))
+println(ejecutarOperacion(20, 8, (a, b) => a / b))
+println(ejecutarOperacion(20, 8, (a, b) => (a + b) / 2))
+
+//5
+def generarMultiplicador(factor: Int): Int => Int = {
+  x => x * factor
+}
+val doblar2: Int => Int = generarMultiplicador(2)
+val triplicar: Int => Int = generarMultiplicador(3)
+val multiplicarPorDiez: Int => Int = generarMultiplicador(10)
+println(doblar2(9))
+println(triplicar(9))
+println(multiplicarPorDiez(9))
+
+//6
+def calcularDescuento(
+    precio: Double,
+    porcentaje: Double
+): Double = {
+  precio - precio * porcentaje / 100
+}
+val descuentoDiez: Double => Double =
+  calcularDescuento(_, 10)
+val descuentoVeinte: Double => Double =
+  calcularDescuento(_, 20)
+val descuentoCincuenta: Double => Double =
+  calcularDescuento(_, 50)
+println(descuentoDiez(800))
+println(descuentoVeinte(800))
+println(descuentoCincuenta(800))
+
+//7
+def potencia(exponente: Int)(base: Int): Int = {
+  if (exponente == 0) 1
+  else base * potencia(exponente - 1)(base)
+}
+val alCuadrado2: Int => Int = potencia(2)
+val alCubo2: Int => Int = potencia(3)
+val aLaCuarta: Int => Int = potencia(4)
+println(alCuadrado2(6))
+println(alCubo2(4))
+println(aLaCuarta(3))
+
+//8
+val limpiarEspacios: String => String =
+  texto => texto.trim
+val aMinusculas: String => String =
+  texto => texto.toLowerCase
+val obtenerLongitud: String => Int =
+  texto => texto.length
+val tieneLongitudMinima: Int => Boolean =
+  n => n >= 5
+val esTextoValido: String => Boolean =
+  limpiarEspacios
+    .andThen(aMinusculas)
+    .andThen(obtenerLongitud)
+    .andThen(tieneLongitudMinima)
+println(esTextoValido(" Kotlin "))
+println(esTextoValido("Hola"))
+println(esTextoValido(" PROGRAMACION "))
+println(esTextoValido("xyz"))
+
+//9
+def sumatoria(
+    desde: Int,
+    hasta: Int,
+    transformar: Int => Int
+): Int = {
+  if (desde > hasta) 0
+  else transformar(desde) + sumatoria(desde + 1, hasta, transformar)
+}
+def productoria(
+    desde: Int,
+    hasta: Int,
+    transformar: Int => Int
+): Int = {
+  if (desde > hasta) 1
+  else transformar(desde) * productoria(desde + 1, hasta, transformar)
+}
+println(sumatoria(1, 5, x => x))
+println(sumatoria(1, 4, x => x * x))
+println(sumatoria(1, 3, x => x * x * x))
+println(productoria(1, 5, x => x))
+println(productoria(1, 4, x => x * 2))
+
+//10
+def mapearTexto(
+    texto: String,
+    transformacion: Char => Char
+): String = {
+  if (texto.isEmpty) ""
+  else transformacion(texto.head).toString +
+       mapearTexto(texto.tail, transformacion)
+}
+def contieneCaracter(
+    texto: String,
+    condicion: Char => Boolean
+): Boolean = {
+  if (texto.isEmpty) false
+  else if (condicion(texto.head)) true
+  else contieneCaracter(texto.tail, condicion)
+}
+println(mapearTexto("kotlin", c => c.toUpper))
+println(contieneCaracter("Kotlin2026", c => c.isDigit))
+println(contieneCaracter("Kotlin", c => c == 'z'))
