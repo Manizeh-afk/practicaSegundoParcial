@@ -1,0 +1,116 @@
+abstract class ElementoBiblioteca(
+    val nombre: String,
+    val escritor: String,
+    val anioPublicacion: Int
+) {
+    def categoria: String
+    def ficha: String = s"$nombre - $escritor ($anioPublicacion) - $categoria"
+    def precioPrestamo(dias: Int): Double
+}
+trait PuedePrestarse {
+    val estaDisponible: Boolean
+    def realizarPrestamo(): ElementoBiblioteca
+}
+trait PuedeRenovar {
+    val diasPermitidos: Int
+    def extenderPrestamo(diasExtra: Int): ElementoBiblioteca
+}
+trait PuedeDescargar {
+    val pesoMB: Double
+    def obtenerDescarga(): String = s"Descargando archivo de $pesoMB MB"
+}
+trait PuedeReproducir {
+    val minutosDuracion: Int
+    def iniciarReproduccion(): String = s"Reproduciendo contenido de $minutosDuracion minutos"
+}
+class LibroImpreso(
+    nombre: String,
+    escritor: String,
+    anioPublicacion: Int,
+    val estaDisponible: Boolean,
+    val diasPermitidos: Int
+) extends ElementoBiblioteca(nombre, escritor, anioPublicacion) with PuedePrestarse with PuedeRenovar {
+    override def categoria: String = "Libro Impreso"
+    override def precioPrestamo(dias: Int): Double = dias * 1.5
+    override def realizarPrestamo(): LibroImpreso = {
+        new LibroImpreso(nombre, escritor, anioPublicacion, false, diasPermitidos)
+    }
+    override def extenderPrestamo(diasExtra: Int): LibroImpreso = {
+        new LibroImpreso(nombre, escritor, anioPublicacion, estaDisponible, diasPermitidos + diasExtra)
+    }
+}
+class LibroElectronico(
+    nombre: String,
+    escritor: String,
+    anioPublicacion: Int,
+    val pesoMB: Double
+) extends ElementoBiblioteca(nombre, escritor, anioPublicacion) with PuedeDescargar {
+    override def categoria: String = "Libro Electrónico"
+    override def precioPrestamo(dias: Int): Double = dias * 0.5
+}
+class LibroAudio(
+    nombre: String,
+    escritor: String,
+    anioPublicacion: Int,
+    val minutosDuracion: Int,
+    val pesoMB: Double
+) extends ElementoBiblioteca(nombre, escritor, anioPublicacion) with PuedeReproducir with PuedeDescargar {
+    override def categoria: String = "Libro de Audio"
+    override def precioPrestamo(dias: Int): Double = dias * 0.75
+}
+class RevistaImpresa(
+    nombre: String,
+    escritor: String,
+    anioPublicacion: Int,
+    val edicion: Int,
+    val estaDisponible: Boolean,
+    val diasPermitidos: Int
+) extends ElementoBiblioteca(nombre, escritor, anioPublicacion) with PuedePrestarse with PuedeRenovar {
+    override def categoria: String = "Revista Impresa"
+    override def precioPrestamo(dias: Int): Double = dias * 1.0
+    override def realizarPrestamo(): RevistaImpresa = {
+        new RevistaImpresa(nombre, escritor, anioPublicacion, edicion, false, diasPermitidos)
+    }
+    override def extenderPrestamo(diasExtra: Int): RevistaImpresa = {
+        new RevistaImpresa(nombre, escritor, anioPublicacion, edicion, estaDisponible, diasPermitidos + diasExtra)
+    }
+}
+class CursoVideo(
+    nombre: String,
+    escritor: String,
+    anioPublicacion: Int,
+    val minutosDuracion: Int,
+    val pesoMB: Double
+) extends ElementoBiblioteca(nombre, escritor, anioPublicacion) with PuedeReproducir with PuedeDescargar {
+    override def categoria: String = "Curso en Video"
+    override def precioPrestamo(dias: Int): Double = dias * 1.2
+}
+def obtenerInformacion(elemento: ElementoBiblioteca): String = {
+    elemento.ficha
+}
+def obtenerCosto(elemento: ElementoBiblioteca, dias: Int): Double = {
+    elemento.precioPrestamo(dias)
+}
+val libroImpreso1 = new LibroImpreso("Effective Java", "Joshua Bloch", 2018, true, 10)
+val libroElectronico1 = new LibroElectronico("Programming in Scala", "Martin Odersky", 2021, 22.0)
+val audio1 = new LibroAudio("Code Complete", "Steve McConnell", 2004, 960, 1200.0)
+val revista1 = new RevistaImpresa("Communications of the ACM", "ACM", 2025, 12, true, 7)
+val curso1 = new CursoVideo("Scala para Principiantes", "Escuela Técnica", 2025, 300, 1800.0)
+println(obtenerInformacion(libroImpreso1))
+println(obtenerInformacion(libroElectronico1))
+println(obtenerInformacion(audio1))
+println(obtenerCosto(libroImpreso1, 12))
+println(obtenerCosto(curso1, 7))
+println(libroElectronico1.obtenerDescarga())
+println(audio1.obtenerDescarga())
+println(audio1.iniciarReproduccion())
+println(curso1.iniciarReproduccion())
+val libroPrestado = libroImpreso1.realizarPrestamo()
+println(libroImpreso1.estaDisponible)
+println(libroPrestado.estaDisponible)
+val libroExtendido = libroImpreso1.extenderPrestamo(4)
+println(libroImpreso1.diasPermitidos)
+println(libroExtendido.diasPermitidos)
+println(obtenerInformacion(revista1))
+println(revista1.realizarPrestamo().estaDisponible)
+println(revista1.extenderPrestamo(2).diasPermitidos)
